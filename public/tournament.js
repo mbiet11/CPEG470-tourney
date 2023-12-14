@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCtXiQZ0k_vaOf9XsjHV1j5mxWTYCEqdBQ",
@@ -30,13 +30,20 @@ onValue(tournamentRef, (snapshot) => {
         document.getElementById('registerBtn').addEventListener('click', () => {
             const user = auth.currentUser;
             if (user) {
-                alert(`User ${user.uid} registered for the tournament!`);
+                // Capture user registration for the tournament
+                const registrationsRef = ref(database, `registrations/${tournamentId}`);
+                push(registrationsRef).set({
+                    userId: user.uid,
+                    email: user.email,
+                });
+
+                alert(`User ${user.email} registered for the tournament!`);
             } else {
                 alert('Please log in to register for the tournament.');
             }
         });
     } else {
         alert('Tournament not found.');
-        window.location.href = 'index.html';
+        window.location.href = 'tournament.html';
     }
 });
